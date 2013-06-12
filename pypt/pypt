@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+import sys,os
+from string import Template
+from .py_make import task,build
+
+_dir_list = ["data","code","tables","results","figures"]
+_readme_template = "${pname}\n===\n"
+
+@task()
+def generate(project_name,dir_list=_dir_list):
+	"""Generate the project stucture"""
+	print("Creating dir: %s"%project_name)
+	os.mkdir(project_name)
+	os.chdir(project_name)
+	for d in dir_list:
+		print("Creating dir: %s"%d)
+		os.mkdir(d)
+	with open("README.md","w") as readme:
+		print("Populating README")
+		t = Template(_readme_template)
+		readme.write(t.substitute(pname=project_name))
+
+@task()
+def remove(project_name):
+	"""Remove the project structure"""
+	for root, dirs, files in os.walk(project_name, topdown=False):
+		for name in files:
+			f = os.path.join(root,name)
+			print("Removing file: %s"%f)
+			os.remove(f)
+		for name in dirs:
+			d = os.path.join(root,name)
+			print("Removing dir: %s"%d)
+			os.rmdir(d)
+	print("Removing dir: %s"%project_name)
+	os.rmdir(project_name)
+
+if __name__=="__main__":
+	build(sys.argv[1:],sys.modules["__main__"])

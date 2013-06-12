@@ -254,3 +254,6 @@ def _get_logger(module):
 	logger.addHandler(ch)
 
 	return logger
+
+if __name__=="__main__":
+	build(sys.argv[1:])
