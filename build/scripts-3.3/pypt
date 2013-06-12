@@ -1,7 +1,8 @@
 #!/usr/bin/python
-import sys,os
+import sys,os, argparse, imp
+from os import path
 from string import Template
-from pypt import task,build
+from pypt import task,_print_tasks,_run_by_task_name
 
 _dir_list = ["data","code","tables","results","figures"]
 _readme_template = "${pname}\n===\n"
@@ -35,8 +36,63 @@ def remove(project_name):
 	print("Removing dir: %s"%project_name)
 	os.rmdir(project_name)
 
+def _create_parser():
+	"""
+	@rtype: argparse.ArgumentParser
+	"""
+	parser = argparse.ArgumentParser()
+	parser.add_argument("tasks", help="perform specified task and all it's dependancies",
+						metavar="task", nargs = '*')
+	parser.add_argument('-l', '--list-tasks', help = "List the tasks",
+						action =  'store_true')
+	parser.add_argument('-f', '--file',
+						help = "Build file to read the tasks from. 'makefile.py' is default value assumed if this argument is unspecified",
+						metavar = "file", default =  "makefile.py")
+	
+	return parser
+
 if __name__=="__main__":
-	if sys.argv[1] == "generate" or sys.argv[1] == "remove":
-		build(sys.argv[1:],sys.modules["__main__"])
+	"""
+	Build the specified module with specified arguments.
+	"""
+	args = sys.argv[1:]
+
+	# Build the command line.
+	parser = _create_parser()
+	this_module = sys.modules["__main__"]
+
+	#No args passed. 
+	if not args:
+		parser.print_help()
+		print("\nDefault tasks:")
+		_print_tasks(this_module)
+		sys.exit()
+
+	# Parse arguments.
+	args = parser.parse_args(args)
+
+	#load build file as a module
+	if ("generate" in args.tasks or "remove" in args.tasks):
+		module = this_module
 	else:
-		build(sys.argv[1:])
+		if not path.isfile(args.file):
+			raise Exception("Build file '%s' does not exist" % args.file) 
+		else:
+			module = imp.load_source(
+					path.splitext(
+						path.basename(args.file))[0],args.file)
+	
+	
+	# Run task and all it's dependencies.
+	if args.list_tasks:
+		print("Available tasks:")
+		_print_tasks(module)
+		#TODO: rename all calls to singular
+	elif not args.tasks:
+		parser.print_help()
+		print("\n")
+		_print_tasks(module)
+	else:
+		_run_by_task_name(module,args.tasks)
+
+
