@@ -1,8 +1,9 @@
-from distutils.core import setup
-setup(name='project_template',
+from setuptools import setup
+setup(name='pypt',
 	version='0.1',
-	desription="A simple tool to manage your data workflow",
+	description="A simple tool to manage your data workflow",
 	author="Ivan Kryukov",
 	license="WTFUW",
-	py_modules=['project_template'],
+	scripts = {"pypt=py-make:main"},
+	py_modules=['pypt'],
 )
