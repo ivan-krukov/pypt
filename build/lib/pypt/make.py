@@ -42,27 +42,28 @@ def build(args,module=None):
 	
 	# Run task and all it's dependencies.
 	if args.list_tasks:
-		_print_tasks(module)
+		print_tasks(module, args.file)
 		#TODO: rename all calls to singular
 	elif not args.tasks:
 		parser.print_help()
 		print("\n")
-		_print_tasks(module)
+		print_tasks(module, args.file)
 	else:
-		_run_by_task_name(module,args.tasks)
+		_run_from_task_names(module,args.tasks)
 
-def _print_tasks(module):
+def print_tasks(module, file):
 	# Get all tasks.
 	tasks = _get_tasks(module)
 	
 	# Build task_list to describe the tasks.
+	task_list = "Available tasks:"
 	name_width = _get_max_name_length(module)+4
 	task_help_format = "\n  {0:<%s} {1: ^20} {2}" % name_width
 	for task in tasks:
 		task_list += task_help_format.format(task.name, task.params, task.doc)
 	print(task_list)
 
-def _run_by_task_name(module,task_name):
+def _run_from_task_names(module,task_name):
 	"""
 	@type module: module
 	@type task_name: string
@@ -155,6 +156,20 @@ def _run(module, logger, task, completed_tasks, from_command_line = False, args 
 	
 	return completed_tasks
 
+def _create_parser():
+	"""
+	@rtype: argparse.ArgumentParser
+	"""
+	parser = argparse.ArgumentParser()
+	parser.add_argument("tasks", help="perform specified task and all it's dependancies",
+						metavar="task", nargs = '*')
+	parser.add_argument('-l', '--list-tasks', help = "List the tasks",
+						action =  'store_true')
+	parser.add_argument('-f', '--file',
+						help = "Build file to read the tasks from. 'makefile.py' is default value assumed if this argument is unspecified",
+						metavar = "file", default =  "makefile.py")
+	
+	return parser
 		
 def task(*dependencies, **options):
 	#validate the dependency list
