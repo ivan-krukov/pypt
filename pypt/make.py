@@ -226,8 +226,6 @@ def _get_max_name_length(module):
 	
 	@type module: module
 	"""
-	import ipdb
-	ipdb.set_trace()
 	return max([len(task.name) for task in _get_tasks(module)])
 	
 def _get_logger(module):

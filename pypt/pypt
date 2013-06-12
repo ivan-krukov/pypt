@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys,os
 from string import Template
-from .py_make import task,build
+from make import task,build
 
 _dir_list = ["data","code","tables","results","figures"]
 _readme_template = "${pname}\n===\n"
