@@ -40,7 +40,8 @@ def _create_parser(epilog):
 	"""
 	@rtype: argparse.ArgumentParser
 	"""
-	parser = argparse.ArgumentParser(epilog = epilog)
+	parser = argparse.ArgumentParser(epilog = epilog,
+			formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("tasks", help="perform specified task and all it's dependancies",
 						metavar="task", nargs = '*')
 	parser.add_argument('-l', '--list-tasks', help = "List the tasks",
@@ -59,13 +60,11 @@ if __name__=="__main__":
 	this_module = sys.modules["__main__"]
 
 	# Build the command line.
-	parser = _create_parser(_tasks_description(this_module))
+	parser = _create_parser("Default tasks:" + _tasks_description(this_module))
 
 	#No args passed. 
 	if not args:
 		parser.print_help()
-		print("\nDefault tasks:")
-		print(_tasks_description(this_module))
 		sys.exit()
 
 	# Parse arguments.

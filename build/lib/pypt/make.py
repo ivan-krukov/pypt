@@ -51,7 +51,7 @@ def build(args,module=None):
 	else:
 		_run_by_task_name(module,args.tasks)
 
-def _print_tasks(module):
+def _tasks_description(module):
 	# Get all tasks.
 	tasks = _get_tasks(module)
 	task_list = []
@@ -61,7 +61,7 @@ def _print_tasks(module):
 	task_help_format = "\n  {0:<%s} {1:<%s} {2}" %(name_width,param_width)
 	for task in tasks:
 		task_list.append(task_help_format.format(task.name, task.params, task.doc))
-	print("".join(task_list))
+	return ("".join(task_list))
 
 def _run_by_task_name(module,task_name):
 	"""
