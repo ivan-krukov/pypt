@@ -184,7 +184,7 @@ class Task(object):
 		self.func = func
 		self.name = func.__name__
 		self.doc = inspect.getdoc(func) or ''
-		self.params = self.parse_params(inspect.signature(func).parameters)
+		self.params = inspect.formatargspec(*inspect.getfullargspec(func))
 		self.dependancies = dependancies
 		
 	def __call__(self,*args,**kwargs):
@@ -197,17 +197,6 @@ class Task(object):
 		"""
 		return isinstance(obj,cls)
 
-	@staticmethod
-	def parse_params(params):
-		param_list =[]	
-		for p in params.items():
-			name,p_obj = p
-			if not (p_obj.default == inspect.Parameter.empty):
-				param_list.append("[%s]"%name)
-			else:
-				param_list.append(name)
-		return ",".join(param_list)
-	
 def _get_tasks(module):
 	"""
 	Returns all functions marked as tasks.
