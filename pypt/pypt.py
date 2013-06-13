@@ -2,6 +2,7 @@
 
 from string import Template
 import inspect
+import envoy
 
 def render(string,variables=None):
 	"""Wrapper method for String Template:
@@ -19,3 +20,9 @@ def render(string,variables=None):
 		finally:
 			del frame
 	return t.substitute(variables)
+
+def run(command,echo=True):
+	response = envoy.run(command)
+	if echo: 
+		print(response.std_out)
+	return response
